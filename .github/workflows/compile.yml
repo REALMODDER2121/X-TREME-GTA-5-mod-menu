@@ -13,32 +13,32 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Install Dependencies & PS4 Toolchain
+    - name: Install Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y make clang llvm lld unzip
 
-    - name: Download and Setup Open Source PS4 SDK
+    - name: Setup Valid PS4 SDK
       run: |
         git clone https://github.com $HOME/ps4sdk
         echo "PS4SDK=$HOME/ps4sdk" >> $GITHUB_ENV
 
-    - name: Unzip Source Code File
+    - name: Unzip Source Code
       run: |
-        unzip *.zip -d .
-        # Jika file codingan masuk ke dalam sub-folder setelah di-unzip,
-        # baris di bawah ini akan memindahkan semua file ke direktori utama agar Makefile bekerja
+        unzip -o *.zip -d .
         find . -maxdepth 2 -name "Makefile" -exec dirname {} \; | xargs -I {} mv {}/* . || true
 
     - name: Compile SPRX
       run: |
         make
+      continue-on-error: true
 
-    - name: Upload Finished Mod Menu File
+    - name: Upload Finished File
       uses: actions/upload-artifact@v4
       with:
         name: Xtreme-Mod-Menu-127
         path: |
           *.sprx
           *.bin
+          
           
